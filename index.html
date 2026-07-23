@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Chrome Break Calculator</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Spline+Sans+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --dodger:#005A9C;
+  --dodger-bright:#2D8CFF;
+  --night:#0A1628;
+  --night-2:#0F2038;
+  --night-3:#16294a;
+  --line:#21395f;
+  --ink:#EAF2FF;
+  --ink-dim:#8FA8C9;
+  --gold:#FFD23F;
+  --green:#3DDC84;
+  --red:#FF4D5E;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--night);
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(45,140,255,.18), transparent);
+  color:var(--ink);
+  font-family:'Spline Sans Mono',monospace;
+  font-size:14px;
+  min-height:100vh;
+  padding-bottom:60px;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{padding:36px 0 20px;text-align:center}
+h1{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:900;
+  font-size:clamp(28px,5vw,44px);
+  letter-spacing:.5px;
+  color:var(--ink);
+}
+h1 span{color:var(--dodger-bright)}
+header p{color:var(--ink-dim);margin-top:8px;font-size:13px;line-height:1.6;max-width:640px;margin-left:auto;margin-right:auto}
+.card{
+  background:var(--night-2);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:22px 24px;
+  margin-bottom:20px;
+}
+.card h2{
+  font-family:'Big Shoulders Display',sans-serif;
+  font-weight:800;
+  font-size:22px;
+  color:var(--dodger-bright);
+  margin-bottom:4px;
+}
+.card .sub{color:var(--ink-dim);font-size:12px;margin-bottom:16px;line-height:1.5}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media (max-width:820px){.grid5{grid-template-columns:repeat(2,1fr)}}
+.field label{display:block;font-size:11px;color:var(--ink-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.field input{
+  width:100%;
+  background:var(--night-3);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px 10px;
+  color:var(--ink);
+  font-family:inherit;
+  font-size:14px;
+}
+.field input:focus{outline:none;border-color:var(--dodger-bright)}
+.field .hint{color:var(--ink-dim);font-size:10px;margin-top:4px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:900px){.two-col{grid-template-columns:1fr}}
+.engine{background:var(--night-2);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+.engine h2{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;color:var(--gold);margin-bottom:2px}
+.engine .sub{color:var(--ink-dim);font-size:12px;margin-bottom:16px}
+fieldset{border:none;margin-bottom:18px}
+.fields-4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.fields-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.results{border-top:1px dashed var(--line);padding-top:16px;margin-top:4px}
+.stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.stat-row .label{color:var(--ink-dim);font-size:12px}
+.stat-row .value{font-weight:700;font-size:14px;text-align:right}
+.big-stat{margin-top:14px;text-align:center}
+.big-stat .amount{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:36px;color:var(--dodger-bright)}
+.big-stat .caption{color:var(--ink-dim);font-size:11px;margin-top:2px}
+.verdict{margin-top:14px;padding:12px 14px;border-radius:8px;font-size:13px;font-weight:700;text-align:center}
+.verdict.buy{background:rgba(61,220,132,.15);color:var(--green);border:1px solid rgba(61,220,132,.4)}
+.verdict.pass{background:rgba(255,77,94,.15);color:var(--red);border:1px solid rgba(255,77,94,.4)}
+.verdict.neutral{background:rgba(255,255,255,.05);color:var(--ink-dim);border:1px solid var(--line)}
+details{margin-top:16px}
+summary{cursor:pointer;color:var(--dodger-bright);font-size:12px;font-weight:700;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary:before{content:'▸ ';}
+details[open] summary:before{content:'▾ ';}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:11px}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.06)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--ink-dim);font-weight:600;text-transform:uppercase;font-size:9px;letter-spacing:.04em}
+.table-scroll{overflow-x:auto}
+footer{color:var(--ink-dim);font-size:11px;text-align:center;margin-top:30px;line-height:1.8;padding:0 16px}
+footer a{color:var(--dodger-bright)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>2026 Topps Chrome <span>Break Calculator</span></h1>
+    <p>Enter the box mix for a group break, then price out a Miguel Rojas spot or a full Dodgers-team spot. Odds are pulled directly from Topps' published checklist and odds sheet — see methodology at the bottom.</p>
+  </header>
+
+  <section class="card">
+    <h2>Case Composition</h2>
+    <div class="sub">How many boxes of each format are in this specific break? (Not necessarily a full case of one type — enter whatever mix the breaker is running.)</div>
+    <div class="grid5">
+      <div class="field">
+        <label>Hobby boxes</label>
+        <input type="number" id="box-hobby" min="0" step="1" value="0">
+        <div class="hint">4 cards × 20 packs/box</div>
+      </div>
+      <div class="field">
+        <label>Jumbo boxes</label>
+        <input type="number" id="box-jumbo" min="0" step="1" value="0">
+        <div class="hint">11 cards × 12 packs/box</div>
+      </div>
+      <div class="field">
+        <label>Mega boxes</label>
+        <input type="number" id="box-mega" min="0" step="1" value="0">
+        <div class="hint">7 cards × 6 packs/box</div>
+      </div>
+      <div class="field">
+        <label>Value boxes</label>
+        <input type="number" id="box-value" min="0" step="1" value="0">
+        <div class="hint">4 cards × 7 packs/box</div>
+      </div>
+      <div class="field">
+        <label>Breaker Delight boxes</label>
+        <input type="number" id="box-delight" min="0" step="1" value="0">
+        <div class="hint">12 cards/box, guaranteed hits</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="two-col">
+    <section class="engine">
+      <h2>Engine 1 — Miguel Rojas Spot</h2>
+      <div class="sub">Odds of hitting one (or both) of the 2 known Rojas cards, and the max you should pay for the spot.</div>
+
+      <fieldset>
+        <div class="fields-3">
+          <div class="field">
+            <label>CHAMP-15 value ($)</label>
+            <input type="number" id="rojas-val-champ" min="0" step="1" value="15">
+          </div>
+          <div class="field">
+            <label>WCA-MR value ($)</label>
+            <input type="number" id="rojas-val-wca" min="0" step="1" value="40">
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="hint" style="margin-top:9px">Your own resale/collecting estimate per card.</div>
+          </div>
+        </div>
+        <div class="fields-3">
+          <div class="field">
+            <label>Spot price asked ($)</label>
+            <input type="number" id="rojas-spot-price" min="0" step="1" value="">
+          </div>
+          <div class="field">
+            <label>Sales tax (%)</label>
+            <input type="number" id="rojas-tax" min="0" step="0.1" value="9.5">
+          </div>
+          <div class="field">
+            <label>Shipping ($)</label>
+            <input type="number" id="rojas-shipping" min="0" step="1" value="0">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="results">
+        <div class="stat-row"><span class="label">P(hit CHAMP-15)</span><span class="value" id="rojas-champ-p">—</span></div>
+        <div class="stat-row"><span class="label">Expected CHAMP-15 copies</span><span class="value" id="rojas-champ-count">—</span></div>
+        <div class="stat-row"><span class="label">P(hit WCA-MR)</span><span class="value" id="rojas-wca-p">—</span></div>
+        <div class="stat-row"><span class="label">Expected WCA-MR copies</span><span class="value" id="rojas-wca-count">—</span></div>
+        <div class="stat-row"><span class="label">P(hit either Rojas card)</span><span class="value" id="rojas-either-p">—</span></div>
+
+        <div class="big-stat">
+          <div class="amount" id="rojas-ev">$0</div>
+          <div class="caption">expected value of Rojas cards from this break</div>
+        </div>
+        <div class="stat-row" style="margin-top:10px"><span class="label">Max total spend (incl. tax/shipping)</span><span class="value" id="rojas-max-total">—</span></div>
+        <div class="stat-row"><span class="label">→ max spot price</span><span class="value" id="rojas-max-spot">—</span></div>
+
+        <div class="verdict neutral" id="rojas-verdict">Enter a spot price to get a buy/pass call.</div>
+
+        <details>
+          <summary>Odds breakdown by box type</summary>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Card</th><th>Hobby</th><th>Jumbo</th><th>Mega</th><th>Value</th><th>Delight</th><th>Total exp.</th></tr></thead>
+              <tbody id="rojas-breakdown-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="engine">
+      <h2>Engine 2 — Full Dodgers Spot</h2>
+      <div class="sub">Expected count and value of every Dodgers card (base, inserts, autos, relics) from this break — the standard "team spot" in a group break.</div>
+
+      <fieldset>
+        <div class="fields-4">
+          <div class="field">
+            <label>Avg base card value ($)</label>
+            <input type="number" id="dodgers-val-base" min="0" step="0.5" value="1">
+          </div>
+          <div class="field">
+            <label>Avg insert value ($)</label>
+            <input type="number" id="dodgers-val-insert" min="0" step="1" value="5">
+          </div>
+          <div class="field">
+            <label>Avg autograph value ($)</label>
+            <input type="number" id="dodgers-val-auto" min="0" step="5" value="30">
+          </div>
+          <div class="field">
+            <label>Avg relic value ($)</label>
+            <input type="number" id="dodgers-val-relic" min="0" step="10" value="75">
+          </div>
+        </div>
+        <div class="fields-3">
+          <div class="field">
+            <label>Spot price asked ($)</label>
+            <input type="number" id="dodgers-spot-price" min="0" step="1" value="">
+          </div>
+          <div class="field">
+            <label>Sales tax (%)</label>
+            <input type="number" id="dodgers-tax" min="0" step="0.1" value="9.5">
+          </div>
+          <div class="field">
+            <label>Shipping ($)</label>
+            <input type="number" id="dodgers-shipping" min="0" step="1" value="0">
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="results">
+        <div class="stat-row"><span class="label">Base cards (expected)</span><span class="value" id="dodgers-cat-base">—</span></div>
+        <div class="stat-row"><span class="label">Inserts (expected)</span><span class="value" id="dodgers-cat-insert">—</span></div>
+        <div class="stat-row"><span class="label">Autographs (expected)</span><span class="value" id="dodgers-cat-auto">—</span></div>
+        <div class="stat-row"><span class="label">Relics (expected)</span><span class="value" id="dodgers-cat-relic">—</span></div>
+        <div class="stat-row"><span class="label">Total Dodgers cards</span><span class="value" id="dodgers-total-count">—</span></div>
+
+        <div class="big-stat">
+          <div class="amount" id="dodgers-ev">$0</div>
+          <div class="caption">expected value of all Dodgers cards from this break</div>
+        </div>
+        <div class="stat-row" style="margin-top:10px"><span class="label">Max total spend (incl. tax/shipping)</span><span class="value" id="dodgers-max-total">—</span></div>
+        <div class="stat-row"><span class="label">→ max spot price</span><span class="value" id="dodgers-max-spot">—</span></div>
+
+        <div class="verdict neutral" id="dodgers-verdict">Enter a spot price to get a buy/pass call.</div>
+
+        <details>
+          <summary>Full set-by-set breakdown (37 sets)</summary>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>Set</th><th>Category</th><th>Dodgers/Total subjects</th><th>Expected count</th></tr></thead>
+              <tbody id="dodgers-breakdown-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    Odds sourced from Topps' published 2026 Chrome Baseball checklist and odds sheet; actual pulls vary by print run.
+    Hobby/Jumbo/Mega/Value odds are per pack; Breaker Delight odds are per box (no pack structure).
+    Where only a "Gold Refractor" tier is disclosed for an insert, that tier stands in for "any copy." Base-card
+    player odds assume uniform distribution across the 300 subjects (Topps does not publish per-player base rates).
+    Brooklyn Dodgers legacy cards are counted as Dodgers. This is a personal estimation tool, not financial advice.
+  </footer>
+</div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
