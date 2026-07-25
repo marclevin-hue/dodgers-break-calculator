@@ -205,7 +205,36 @@ function renderAll() {
   renderDodgers();
 }
 
+// Remember the per-card dollar values you enter (Rojas + Dodgers) between
+// visits, so you don't have to retype your own valuations every time you
+// open the site for a new break. Box counts, spot price, tax, and shipping
+// are break-specific and intentionally NOT remembered.
+const REMEMBERED_VALUE_IDS = [
+  'rojas-val-champ', 'rojas-val-wca',
+  'dodgers-val-base', 'dodgers-val-insert', 'dodgers-val-auto', 'dodgers-val-relic'
+];
+const STORAGE_KEY = 'chromeBreakCalc.cardValues';
+
+function loadRememberedValues() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    for (const id of REMEMBERED_VALUE_IDS) {
+      if (saved[id] !== undefined) document.getElementById(id).value = saved[id];
+    }
+  } catch (e) { /* localStorage unavailable (private mode, etc.) — just use defaults */ }
+}
+
+function saveRememberedValues() {
+  try {
+    const toSave = {};
+    for (const id of REMEMBERED_VALUE_IDS) toSave[id] = document.getElementById(id).value;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch (e) { /* localStorage unavailable — silently skip persistence */ }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  loadRememberedValues();
   document.querySelectorAll('input').forEach(el => el.addEventListener('input', renderAll));
+  REMEMBERED_VALUE_IDS.forEach(id => document.getElementById(id).addEventListener('input', saveRememberedValues));
   renderAll();
 });
